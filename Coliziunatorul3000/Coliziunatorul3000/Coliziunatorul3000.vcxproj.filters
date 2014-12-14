@@ -39,4 +39,12 @@
       <Filter>Camera</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="basicPS.pixelshader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="basicVS.vertexshader">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

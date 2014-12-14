@@ -20,8 +20,8 @@ void CheckCameraInputs(GLFWwindow* window, Camera* camera)
 
 	glfwGetCursorPos(window, &xpos, &ypos);
 
-	camera->RotateYaw  ((xpos - halfWidth)  * MOUSE_SPEED);
-	camera->RotatePitch((ypos - halfHeight) * MOUSE_SPEED);
+	camera->RotateYaw  (((float)xpos - halfWidth)  * MOUSE_SPEED);
+	camera->RotatePitch(((float)ypos - halfHeight) * MOUSE_SPEED);
 
 	glfwSetCursorPos(window, halfWidth, halfHeight);
 }
@@ -31,6 +31,10 @@ int main()
 	graphics = new Graphics();
 	graphics->Init(640, 480, "Coliziunatorul3000");
 	
+	std::cout<<glGetString(GL_VERSION)<<std::endl;
+
+	graphics->LoadShaders("basicVS.vertexshader", "basicPS.pixelshader");
+
     int width, height;
     glfwGetFramebufferSize(graphics->GetWindow(), &width, &height);
 
@@ -41,33 +45,23 @@ int main()
 
 	glm::mat4 perspectiveMatrix = glm::perspective(45.f, 4.f / 3.f, 1.0f, 200.0f);
 	glm::mat4 viewMatrix;
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(&perspectiveMatrix[0][0]);
-
-	while(!glfwWindowShouldClose(graphics->GetWindow()))
+	
+	graphics->SetPerspective(perspectiveMatrix);
+	
+	do
 	{
-		CheckCameraInputs(graphics->GetWindow(), camera);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        float ratio;
-        glfwGetFramebufferSize(graphics->GetWindow(), &width, &height);
-        ratio = width / (float) height;
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glMatrixMode(GL_MODELVIEW);
-		viewMatrix = camera->GetViewMatrix();
-		glLoadMatrixf(&viewMatrix[0][0]);
-        glBegin(GL_TRIANGLES);
-        glColor3f(1.f, 0.f, 0.f);
-        glVertex3f(-0.6f, -0.4f, 0.f);
-        glColor3f(0.f, 1.f, 0.f);
-        glVertex3f(0.6f, -0.4f, 0.f);
-        glColor3f(0.f, 0.f, 1.f);
-        glVertex3f(0.f, 0.6f, 0.f);
-        glEnd();
-        glfwSwapBuffers(graphics->GetWindow());
+		CheckCameraInputs(graphics->GetWindow(), camera);
+		glDisable(GL_CULL_FACE);
+		graphics->SetView(camera->GetViewMatrix());
+		graphics->DrawCube(glm::mat4(1));
+
+		glfwSwapBuffers(graphics->GetWindow());	
         glfwPollEvents();
-    }
+		glGetError();
+	}
+	while( !glfwGetKey(graphics->GetWindow(), GLFW_KEY_ESCAPE ));
 
 	graphics->Shutdown();
 }

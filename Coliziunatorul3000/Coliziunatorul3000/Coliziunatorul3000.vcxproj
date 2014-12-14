@@ -77,6 +77,10 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ThirdPersonCamera.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="basicPS.pixelshader" />
+    <None Include="basicVS.vertexshader" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
