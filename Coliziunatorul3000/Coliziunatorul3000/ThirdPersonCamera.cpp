@@ -41,3 +41,10 @@ void ThirdPersonCamera::RotateYaw(float rads)
 		yaw += 2 * glm::pi<float>();
 	}
 }
+
+void ThirdPersonCamera::Zoom(float amount)
+{
+	zoom += amount;
+	if(zoom < 3.0f)
+		zoom = 3.0f;
+}

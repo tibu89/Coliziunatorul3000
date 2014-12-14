@@ -8,8 +8,14 @@
 #define MOUSE_SPEED (0.01f)
 
 Graphics* graphics = NULL;
+Camera* camera = NULL;
 
-void CheckCameraInputs(GLFWwindow* window, Camera* camera)
+void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	camera->Zoom(-(float)yoffset);
+}
+
+void CheckCameraInputs(GLFWwindow* window)
 {
 	int halfWidth, halfHeight;
     glfwGetFramebufferSize(window, &halfWidth, &halfHeight);
@@ -41,7 +47,9 @@ int main()
 	glfwSetInputMode(graphics->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	glfwSetCursorPos(graphics->GetWindow(), width / 2, height / 2);
 
-	Camera* camera = new ThirdPersonCamera(0.f, glm::pi<float>(), glm::zero<glm::vec3>());
+	glfwSetScrollCallback(graphics->GetWindow(), ScrollCallback);
+
+	camera = new ThirdPersonCamera(0.f, glm::pi<float>(), glm::zero<glm::vec3>());
 
 	glm::mat4 perspectiveMatrix = glm::perspective(45.f, 4.f / 3.f, 1.0f, 200.0f);
 	glm::mat4 viewMatrix;
@@ -52,7 +60,7 @@ int main()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		CheckCameraInputs(graphics->GetWindow(), camera);
+		CheckCameraInputs(graphics->GetWindow());
 		glDisable(GL_CULL_FACE);
 		graphics->SetView(camera->GetViewMatrix());
 		graphics->DrawCube(glm::mat4(1));
