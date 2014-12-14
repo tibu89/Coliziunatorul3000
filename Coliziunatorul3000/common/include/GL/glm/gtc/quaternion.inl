@@ -190,7 +190,8 @@ namespace detail
 	{
 		*this = quat_cast(m);
 	}
-	
+
+#	if GLM_HAS_EXPLICIT_CONVERSION_OPERATORS
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER tquat<T, P>::operator tmat3x3<T, P>()
 	{
@@ -202,6 +203,7 @@ namespace detail
 	{
 		return mat4_cast(*this);
 	}
+#	endif//GLM_HAS_EXPLICIT_CONVERSION_OPERATORS
 
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER tquat<T, P> conjugate(tquat<T, P> const & q)
@@ -449,7 +451,7 @@ namespace detail
 */
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tquat<T, P> mix(tquat<T, P> const & x, tquat<T, P> const & y, T const & a)
+	GLM_FUNC_QUALIFIER tquat<T, P> mix(tquat<T, P> const & x, tquat<T, P> const & y, T a)
 	{
 		T cosTheta = dot(x, y);
 
@@ -472,7 +474,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tquat<T, P> lerp(tquat<T, P> const & x, tquat<T, P> const & y, T const & a)
+	GLM_FUNC_QUALIFIER tquat<T, P> lerp(tquat<T, P> const & x, tquat<T, P> const & y, T a)
 	{
 		// Lerp is only defined in [0, 1]
 		assert(a >= static_cast<T>(0));
@@ -482,7 +484,7 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tquat<T, P> slerp(tquat<T, P> const & x,	tquat<T, P> const & y, T const & a)
+	GLM_FUNC_QUALIFIER tquat<T, P> slerp(tquat<T, P> const & x,	tquat<T, P> const & y, T a)
 	{
 		tquat<T, P> z = y;
 

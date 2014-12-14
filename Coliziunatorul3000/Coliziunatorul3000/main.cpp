@@ -4,6 +4,7 @@
 
 #include "Graphics.h"
 #include "ThirdPersonCamera.h"
+#include "RigidBody.h"
 
 #define MOUSE_SPEED (0.01f)
 
@@ -51,19 +52,23 @@ int main()
 
 	camera = new ThirdPersonCamera(0.f, glm::pi<float>(), glm::zero<glm::vec3>());
 
-	glm::mat4 perspectiveMatrix = glm::perspective(45.f, 4.f / 3.f, 1.0f, 200.0f);
+	glm::mat4 perspectiveMatrix = glm::perspective(45.f, 640.f / 480.f, 1.0f, 200.0f);
 	glm::mat4 viewMatrix;
 	
 	graphics->SetPerspective(perspectiveMatrix);
-	
+
+	RigidBody *body = new RigidBody();
+	body->AddForceAtBodyPoint(glm::vec3(100.f,100.f,100.f), glm::vec3(-0.5f, 0.5f, 0.5f));
 	do
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		
+		
 		CheckCameraInputs(graphics->GetWindow());
 		glDisable(GL_CULL_FACE);
 		graphics->SetView(camera->GetViewMatrix());
-		graphics->DrawCube(glm::mat4(1));
+		body->Integrate(1 / 30.f);
+		graphics->DrawCube(body->GetTransformMatrix());
 
 		glfwSwapBuffers(graphics->GetWindow());	
         glfwPollEvents();
