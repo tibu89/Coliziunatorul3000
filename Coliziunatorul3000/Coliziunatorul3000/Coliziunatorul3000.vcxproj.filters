@@ -50,6 +50,12 @@
     <ClInclude Include="RigidBody.h">
       <Filter>Physics</Filter>
     </ClInclude>
+    <ClInclude Include="ContactGenerator.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionShapes.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="basicPS.pixelshader">

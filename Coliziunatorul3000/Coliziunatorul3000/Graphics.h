@@ -1,3 +1,5 @@
+#pragma once
+
 #include<GL\glew\glew.h>
 #include<GL\GLFW\glfw3.h>
 #include<GL\glm\glm.hpp>

@@ -75,6 +75,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CollisionShapes.h" />
+    <ClInclude Include="ContactGenerator.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="ThirdPersonCamera.h" />
