@@ -58,7 +58,7 @@ int main()
 	graphics->SetPerspective(perspectiveMatrix);
 
 	RigidBody *body = new RigidBody();
-	body->AddForceAtBodyPoint(glm::vec3(100.f,100.f,100.f), glm::vec3(-0.5f, 0.5f, 0.5f));
+	body->AddForceAtBodyPoint(glm::vec3(20.f,20.f,20.f), glm::vec3(-0.5f, 0.5f, 0.5f));
 	do
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
