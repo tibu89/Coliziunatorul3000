@@ -20,13 +20,22 @@ private:
 	GLuint viewMatrixID;
 	GLuint modelMatrixID;
 
+	GLuint difuseColorID;
+
 	GLuint cubeVertexBuffer;
 	GLuint cubeNormalBuffer;
+
+	GLuint planeVertexBuffer;
+	GLuint planeNormalBuffer;
 
 	static const GLfloat cubeVertexData[];
 	static const GLfloat cubeNormalData[];
 
+	static const GLfloat planeVertexData[];
+	static const GLfloat planeNormalData[];
+
 	void InitCubeModel(); //lol, model
+	void InitPlaneModel(); //dublu lol
 
 public:
 	void Init(int, int, std::string);
@@ -46,4 +55,5 @@ public:
 	}
 
 	void DrawCube(glm::mat4 const &modelMatrix);
+	void DrawPlane(glm::mat4 const &modelMatrix);
 };

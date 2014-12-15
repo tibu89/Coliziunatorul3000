@@ -6,7 +6,7 @@
 #include "ThirdPersonCamera.h"
 #include "RigidBody.h"
 
-#define MOUSE_SPEED (0.01f)
+#define MOUSE_SPEED (0.002f)
 
 Graphics* graphics = NULL;
 Camera* camera = NULL;
@@ -27,8 +27,8 @@ void CheckCameraInputs(GLFWwindow* window)
 
 	glfwGetCursorPos(window, &xpos, &ypos);
 
-	camera->RotateYaw  (((float)xpos - halfWidth)  * MOUSE_SPEED);
-	camera->RotatePitch(((float)ypos - halfHeight) * MOUSE_SPEED);
+	camera->RotateYaw  ((halfWidth  - (float)xpos)  * MOUSE_SPEED);
+	camera->RotatePitch((halfHeight - (float)ypos)  * MOUSE_SPEED);
 
 	glfwSetCursorPos(window, halfWidth, halfHeight);
 }
@@ -54,6 +54,8 @@ int main()
 
 	glm::mat4 perspectiveMatrix = glm::perspective(45.f, 640.f / 480.f, 1.0f, 200.0f);
 	glm::mat4 viewMatrix;
+
+	glm::mat4 planeModelMatrix = glm::translate(glm::vec3(0.0f, -10.0f, 0.0f)) * glm::scale(glm::vec3(100.0f, 100.0f, 100.0f));
 	
 	graphics->SetPerspective(perspectiveMatrix);
 
@@ -69,6 +71,8 @@ int main()
 		graphics->SetView(camera->GetViewMatrix());
 		body->Integrate(1 / 30.f);
 		graphics->DrawCube(body->GetTransformMatrix());
+
+		graphics->DrawPlane(planeModelMatrix);
 
 		glfwSwapBuffers(graphics->GetWindow());	
         glfwPollEvents();

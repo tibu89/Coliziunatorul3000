@@ -107,6 +107,28 @@ const GLfloat Graphics::cubeNormalData[] = {
 
 #pragma endregion
 
+#pragma region PlaneData
+const GLfloat Graphics::planeVertexData[] = {
+	-1.0f, 0.0f, -1.0f,
+	-1.0f, 0.0f,  1.0f,
+	 1.0f, 0.0f, -1.0f,
+	 
+	 1.0f, 0.0f, -1.0f,
+	-1.0f, 0.0f,  1.0f,
+	 1.0f, 0.0f,  1.0f,
+};
+
+const GLfloat Graphics::planeNormalData[] = {
+	0.0f, 1.0f, 0.0f,
+	0.0f, 1.0f, 0.0f,
+	0.0f, 1.0f, 0.0f,
+
+	0.0f, 1.0f, 0.0f,
+	0.0f, 1.0f, 0.0f,
+	0.0f, 1.0f, 0.0f,
+};
+#pragma endregion
+
 void Graphics::Init(int w, int h, std::string title)
 {
 	if(!glfwInit())
@@ -149,6 +171,7 @@ void Graphics::Init(int w, int h, std::string title)
 	glBindVertexArray(vertexArrayID);
 
 	InitCubeModel();
+	InitPlaneModel();
 }
 
 void Graphics::Shutdown()
@@ -163,7 +186,6 @@ void Graphics::Shutdown()
 
 void Graphics::InitCubeModel()
 {
-	int x = sizeof(cubeVertexData);
 	glGenBuffers(1, &cubeVertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertexData), &cubeVertexData[0], GL_STATIC_DRAW);
@@ -171,6 +193,19 @@ void Graphics::InitCubeModel()
 	glGenBuffers(1, &cubeNormalBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeNormalBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeNormalData), &cubeNormalData[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Graphics::InitPlaneModel()
+{
+	glGenBuffers(1, &planeVertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertexData), &planeVertexData[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &planeNormalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, planeNormalBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(planeNormalData), &planeNormalData[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -254,13 +289,17 @@ void Graphics::LoadShaders(std::string vsPath, std::string psPath)
 	projectionMatrixID = glGetUniformLocation(programID, "P");
 	viewMatrixID = glGetUniformLocation(programID, "V");
 	modelMatrixID = glGetUniformLocation(programID, "M");
+	difuseColorID = glGetUniformLocation(programID, "difuseColor");
 }
 
 void Graphics::DrawCube(glm::mat4 const &modelMatrix)
 {
 	glUseProgram(programID);
 
+	glm::vec3 cubeColor(1.0f, 0.0f, 0.0f);
+
 	glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &modelMatrix[0][0]);
+	glUniform3fv(difuseColorID, 1, &cubeColor[0]);
 
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
@@ -285,6 +324,43 @@ void Graphics::DrawCube(glm::mat4 const &modelMatrix)
 	);
 
 	glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+}
+
+void Graphics::DrawPlane(glm::mat4 const &modelMatrix)
+{
+	glUseProgram(programID);
+
+	glm::vec3 planeColor(0.0f, 1.0f, 0.0f);
+
+	glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &modelMatrix[0][0]);
+	glUniform3fv(difuseColorID, 1, &planeColor[0]);
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
+	glVertexAttribPointer(
+		0,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		0,
+		(void*)0
+	);
+
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, planeNormalBuffer);
+	glVertexAttribPointer(
+		1,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		0,
+		(void*)0
+	);
+
+	glDrawArrays(GL_TRIANGLES, 0, 2 * 3);
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
