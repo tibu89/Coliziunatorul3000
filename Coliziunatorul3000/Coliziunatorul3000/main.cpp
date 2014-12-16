@@ -27,8 +27,8 @@ void CheckCameraInputs(GLFWwindow* window)
 
 	glfwGetCursorPos(window, &xpos, &ypos);
 
-	camera->RotateYaw  ((halfWidth  - (float)xpos)  * MOUSE_SPEED);
-	camera->RotatePitch((halfHeight - (float)ypos)  * MOUSE_SPEED);
+	camera->RotateYaw  ((halfWidth  - (float)xpos) * MOUSE_SPEED);
+	camera->RotatePitch((halfHeight - (float)ypos) * MOUSE_SPEED);
 
 	glfwSetCursorPos(window, halfWidth, halfHeight);
 }

@@ -19,7 +19,7 @@ uniform mat4 M;
 void main(){
 
 	mat4 MVP = P * V * M;
-	LightPosition_worldspace = vec3(20.0, 80.0, 40.0);
+	LightPosition_worldspace = vec3(00.0, 80.0, 00.0);
 
 	// Output position of the vertex, in clip space : MVP * position
 	gl_Position =  MVP * vec4(vertexPosition_modelspace,1);
