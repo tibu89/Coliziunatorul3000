@@ -42,9 +42,11 @@ public:
 
 	const glm::mat4& GetTransformMatrix(){return modelTransformMatrix;}
 
+	const glm::vec3& GetPosition(){return position;}
+
 	RigidBody()
 	{
-		invMass = 0.f;
+		invMass = 1.f;
 		linearDamping = 0.99f;
 		angularDamping = 0.99f;
 

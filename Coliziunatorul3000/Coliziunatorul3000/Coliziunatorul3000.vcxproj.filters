@@ -36,6 +36,9 @@
     <ClCompile Include="RigidBody.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="ContactGenerator.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">

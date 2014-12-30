@@ -5,6 +5,7 @@
 #include "Graphics.h"
 #include "ThirdPersonCamera.h"
 #include "RigidBody.h"
+#include "ContactGenerator.h"
 
 #define MOUSE_SPEED (0.002f)
 
@@ -35,6 +36,7 @@ void CheckCameraInputs(GLFWwindow* window)
 
 int main()
 {
+	ContactGenerator contactGenerator(1000);
 	graphics = new Graphics();
 	graphics->Init(640, 480, "Coliziunatorul3000");
 	
@@ -60,7 +62,11 @@ int main()
 	graphics->SetPerspective(perspectiveMatrix);
 
 	RigidBody *body = new RigidBody();
-	body->AddForceAtBodyPoint(glm::vec3(20.f,20.f,20.f), glm::vec3(-0.5f, 0.5f, 0.5f));
+
+	CubeShape cubeShape(body);
+	PlaneShape planeShape(-10.f);
+
+	body->AddForceAtBodyPoint(glm::vec3(1.f,-4.f,1.f), glm::vec3(-0.5f, 0.5f, 0.5f));
 	do
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -73,6 +79,9 @@ int main()
 		graphics->DrawCube(body->GetTransformMatrix());
 
 		graphics->DrawPlane(planeModelMatrix);
+
+		contactGenerator.CheckAndAddContact(planeShape, cubeShape);
+		contactGenerator.ClearContacts();
 
 		glfwSwapBuffers(graphics->GetWindow());	
         glfwPollEvents();
