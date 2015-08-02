@@ -8,6 +8,7 @@
 #include "ContactGenerator.h"
 
 #define MOUSE_SPEED (0.002f)
+#define TRANSLATE_SPEED (0.02f)
 
 Graphics* graphics = NULL;
 Camera* camera = NULL;
@@ -28,8 +29,15 @@ void CheckCameraInputs(GLFWwindow* window)
 
 	glfwGetCursorPos(window, &xpos, &ypos);
 
-	camera->RotateYaw  ((halfWidth  - (float)xpos) * MOUSE_SPEED);
-	camera->RotatePitch((halfHeight - (float)ypos) * MOUSE_SPEED);
+	if( glfwGetMouseButton( window, GLFW_MOUSE_BUTTON_MIDDLE ) == GLFW_PRESS )
+	{
+		camera->Translate( glm::vec3( 0.f, (halfHeight - (float)ypos) * TRANSLATE_SPEED, 0.f ) );
+	}
+	else
+	{
+		camera->RotateYaw  ((halfWidth  - (float)xpos) * MOUSE_SPEED);
+		camera->RotatePitch((halfHeight - (float)ypos) * MOUSE_SPEED);
+	}
 
 	glfwSetCursorPos(window, halfWidth, halfHeight);
 }
@@ -71,7 +79,6 @@ int main()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		
 		CheckCameraInputs(graphics->GetWindow());
 		glDisable(GL_CULL_FACE);
 		graphics->SetView(camera->GetViewMatrix());
@@ -81,6 +88,7 @@ int main()
 		graphics->DrawPlane(planeModelMatrix);
 
 		contactGenerator.CheckAndAddContact(planeShape, cubeShape);
+		contactGenerator.DebugContacts( graphics );
 		contactGenerator.ClearContacts();
 
 		glfwSwapBuffers(graphics->GetWindow());	

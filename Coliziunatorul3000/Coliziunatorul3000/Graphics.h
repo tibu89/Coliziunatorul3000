@@ -56,4 +56,6 @@ public:
 
 	void DrawCube(glm::mat4 const &modelMatrix);
 	void DrawPlane(glm::mat4 const &modelMatrix);
+
+	void DrawDebugPoint(glm::vec3 pos);
 };

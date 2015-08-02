@@ -13,14 +13,14 @@ float ProjectToAxis(const CubeShape& cubeShape, const glm::vec3& axis)
 }
 
 glm::vec3 ContactGenerator::cubeVertices[] = {
-	glm::vec3(-1.f, -1.f, -1.f),
-	glm::vec3(-1.f, -1.f,  1.f),
-	glm::vec3(-1.f,  1.f, -1.f),
-	glm::vec3(-1.f,  1.f,  1.f),
-	glm::vec3( 1.f, -1.f, -1.f),
-	glm::vec3( 1.f, -1.f,  1.f),
-	glm::vec3( 1.f,  1.f, -1.f),
-	glm::vec3( 1.f,  1.f,  1.f)
+	glm::vec3(-0.5f, -0.5f, -0.5f),
+	glm::vec3(-0.5f, -0.5f,  0.5f),
+	glm::vec3(-0.5f,  0.5f, -0.5f),
+	glm::vec3(-0.5f,  0.5f,  0.5f),
+	glm::vec3( 0.5f, -0.5f, -0.5f),
+	glm::vec3( 0.5f, -0.5f,  0.5f),
+	glm::vec3( 0.5f,  0.5f, -0.5f),
+	glm::vec3( 0.5f,  0.5f,  0.5f)
 };
 
 ContactGenerator::ContactGenerator(unsigned int _maxContacts)
@@ -32,18 +32,45 @@ ContactGenerator::ContactGenerator(unsigned int _maxContacts)
 
 void ContactGenerator::CheckAndAddContact(const PlaneShape &planeShape, const CubeShape &cubeShape)
 {
+	if( numContacts >= maxContacts )
+	{
+		return;
+	}
+
 	//midphase: (?)
 	float projectedRadius = ProjectToAxis(cubeShape, planeShape.normal);
 	if(glm::dot(planeShape.normal, cubeShape.body->GetPosition()) - projectedRadius > planeShape.offset)
 	{
-		return; //cube too far to potentially contact
+		//return; //cube too far to potentially contact
 	}
 
-	glm::vec4 transformedVertices[8];
 	glm::mat4 sizeTransform = glm::scale(cubeShape.halfSize * 2.f);
 
-	for(unsigned int i = 0; i < 8; i++)
+	glm::vec3 currentVertex;
+
+	for(unsigned int i = 0; i < 8 && numContacts < maxContacts; i++)
 	{
-		transformedVertices[i] = cubeShape.body->GetTransformMatrix() * sizeTransform * glm::vec4(cubeVertices[i], 1.f);
+		currentVertex = ( cubeShape.body->GetTransformMatrix() * sizeTransform * glm::vec4(cubeVertices[i], 1.f) ).xyz;
+
+		float distance = glm::dot( planeShape.normal, currentVertex );
+
+		if( distance < planeShape.offset )
+		{
+			float penetration = planeShape.offset - distance;
+
+			glm::vec3 contactPoint = planeShape.normal * (penetration / 2) + currentVertex;
+
+			Contact contact;
+						
+			contacts[numContacts++] = Contact( &planeShape, &cubeShape, planeShape.normal, contactPoint, penetration );
+		}
+	}
+}
+
+void ContactGenerator::DebugContacts( Graphics *graphics )
+{
+	for( int i = 0; i < numContacts; i++ )
+	{
+		graphics->DrawDebugPoint( contacts[i].contactPoint );
 	}
 }
