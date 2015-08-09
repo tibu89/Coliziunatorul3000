@@ -41,7 +41,7 @@ void ContactGenerator::CheckAndAddContact(const PlaneShape &planeShape, const Cu
 	float projectedRadius = ProjectToAxis(cubeShape, planeShape.normal);
 	if(glm::dot(planeShape.normal, cubeShape.body->GetPosition()) - projectedRadius > planeShape.offset)
 	{
-		//return; //cube too far to potentially contact
+		return; //cube too far to potentially contact
 	}
 
 	glm::mat4 sizeTransform = glm::scale(cubeShape.halfSize * 2.f);

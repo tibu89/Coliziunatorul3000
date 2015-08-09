@@ -1,6 +1,7 @@
 #pragma once
 
 #define GLM_SWIZZLE
+
 #include <GL\glm\glm.hpp>
 #include <GL\glm\gtc\quaternion.hpp>
 #include <GL\glm\gtx\quaternion.hpp>

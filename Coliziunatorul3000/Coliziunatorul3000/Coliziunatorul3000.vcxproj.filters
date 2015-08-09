@@ -39,6 +39,9 @@
     <ClCompile Include="ContactGenerator.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="FirstPersonCamera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -57,6 +60,12 @@
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="CollisionShapes.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="FirstPersonCamera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEngine.h">
       <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>

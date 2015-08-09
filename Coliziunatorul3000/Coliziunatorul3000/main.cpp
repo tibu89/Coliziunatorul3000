@@ -3,9 +3,8 @@
 #include <GL\glm\gtx\transform.hpp>
 
 #include "Graphics.h"
+#include "FirstPersonCamera.h"
 #include "ThirdPersonCamera.h"
-#include "RigidBody.h"
-#include "ContactGenerator.h"
 
 #define MOUSE_SPEED (0.002f)
 #define TRANSLATE_SPEED (0.02f)
@@ -13,9 +12,48 @@
 Graphics* graphics = NULL;
 Camera* camera = NULL;
 
+glm::vec3 cameraDirectionVector;
+
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera->Zoom(-(float)yoffset);
+}
+
+void KeyCallback(GLFWwindow* window, int button, int scancode, int action, int mods)
+{
+	float sign = 0.f;
+
+	switch(action)
+	{
+	case GLFW_PRESS:
+		sign = 1.f;
+		break;
+	case GLFW_RELEASE:
+		sign = -1.f;
+		break;
+	default:
+		return;
+	}
+
+	switch(button)
+	{
+	case 'w':
+	case 'W':
+		cameraDirectionVector += sign * glm::vec3(  0.f,  0.f, -1.f );
+		break;
+	case 's':
+	case 'S':
+		cameraDirectionVector += sign * glm::vec3(  0.f,  0.f,  1.f );
+		break;
+	case 'a':
+	case 'A':
+		cameraDirectionVector += sign * glm::vec3( -1.f,  0.f,  0.f );
+		break;
+	case 'd':
+	case 'D':
+		cameraDirectionVector += sign * glm::vec3(  1.f,  0.f,  0.f );
+		break;
+	}
 }
 
 void CheckCameraInputs(GLFWwindow* window)
@@ -40,11 +78,13 @@ void CheckCameraInputs(GLFWwindow* window)
 	}
 
 	glfwSetCursorPos(window, halfWidth, halfHeight);
+
+	camera->Translate( cameraDirectionVector * TRANSLATE_SPEED );
 }
 
 int main()
 {
-	ContactGenerator contactGenerator(1000);
+	//ContactGenerator contactGenerator(1000);
 	graphics = new Graphics();
 	graphics->Init(640, 480, "Coliziunatorul3000");
 	
@@ -59,8 +99,9 @@ int main()
 	glfwSetCursorPos(graphics->GetWindow(), width / 2, height / 2);
 
 	glfwSetScrollCallback(graphics->GetWindow(), ScrollCallback);
+	glfwSetKeyCallback(graphics->GetWindow(), KeyCallback);
 
-	camera = new ThirdPersonCamera(0.f, glm::pi<float>(), glm::zero<glm::vec3>());
+	camera = new FirstPersonCamera(0.f, glm::pi<float>(), glm::vec3(0.f, 0.f,5.f));
 
 	glm::mat4 perspectiveMatrix = glm::perspective(45.f, 640.f / 480.f, 1.0f, 200.0f);
 	glm::mat4 viewMatrix;
@@ -69,27 +110,28 @@ int main()
 	
 	graphics->SetPerspective(perspectiveMatrix);
 
-	RigidBody *body = new RigidBody();
+	//RigidBody *body = new RigidBody();
 
-	CubeShape cubeShape(body);
-	PlaneShape planeShape(-10.f);
+	//CubeShape cubeShape(body);
+	//PlaneShape planeShape(-10.f);
 
-	body->AddForceAtBodyPoint(glm::vec3(1.f,-4.f,1.f), glm::vec3(-0.5f, 0.5f, 0.5f));
+	//body->AddForceAtBodyPoint(glm::vec3(1.f,-4.f,1.f), glm::vec3(-0.5f, 0.5f, 0.5f));
 	do
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		CheckCameraInputs(graphics->GetWindow());
+
 		glDisable(GL_CULL_FACE);
 		graphics->SetView(camera->GetViewMatrix());
-		body->Integrate(1 / 30.f);
-		graphics->DrawCube(body->GetTransformMatrix());
+		//body->Integrate(1 / 30.f);
+		//graphics->DrawCube(body->GetTransformMatrix());
 
 		graphics->DrawPlane(planeModelMatrix);
 
-		contactGenerator.CheckAndAddContact(planeShape, cubeShape);
-		contactGenerator.DebugContacts( graphics );
-		contactGenerator.ClearContacts();
+		//contactGenerator.CheckAndAddContact(planeShape, cubeShape);
+		//contactGenerator.DebugContacts( graphics );
+		//contactGenerator.ClearContacts();
 
 		glfwSwapBuffers(graphics->GetWindow());	
         glfwPollEvents();
