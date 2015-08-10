@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <GL\glm\glm.hpp>
 #include "RigidBody.h"
 #include "ContactGenerator.h"
 

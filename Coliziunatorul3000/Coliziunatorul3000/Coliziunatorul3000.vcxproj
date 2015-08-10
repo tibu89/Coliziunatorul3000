@@ -72,6 +72,7 @@
     <ClCompile Include="FirstPersonCamera.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="ThirdPersonCamera.cpp" />
   </ItemGroup>
@@ -88,6 +89,7 @@
   <ItemGroup>
     <None Include="basicPS.pixelshader" />
     <None Include="basicVS.vertexshader" />
+    <None Include="debugPS.pixelshader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

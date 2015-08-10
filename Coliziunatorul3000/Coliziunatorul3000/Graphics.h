@@ -10,7 +10,7 @@ class Graphics
 {
 private:
 	GLFWwindow* window;
-	GLuint programID;
+	GLuint programID, debugProgramID;
 	GLuint vertexArrayID;
 
 	glm::mat4 perspectiveMatrix;
@@ -37,17 +37,19 @@ private:
 	void InitCubeModel(); //lol, model
 	void InitPlaneModel(); //dublu lol
 
+	void LoadShaders(std::string vsPath, std::string psPath, GLuint &_programID);
+
 public:
 	void Init(int, int, std::string);
 	void Shutdown();
 	GLFWwindow* GetWindow(){return window;}
 
-	void LoadShaders(std::string vsPath, std::string psPath);
 	void SetPerspective(glm::mat4 const &P)
 	{
 		perspectiveMatrix = P;
 		glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, &perspectiveMatrix[0][0]);
 	}
+
 	void SetView(glm::mat4 const &V)
 	{
 		viewMatrix = V;

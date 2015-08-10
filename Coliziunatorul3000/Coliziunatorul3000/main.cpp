@@ -89,9 +89,7 @@ int main()
 	graphics->Init(640, 480, "Coliziunatorul3000");
 	
 	std::cout<<glGetString(GL_VERSION)<<std::endl;
-
-	graphics->LoadShaders("basicVS.vertexshader", "basicPS.pixelshader");
-
+	
     int width, height;
     glfwGetFramebufferSize(graphics->GetWindow(), &width, &height);
 

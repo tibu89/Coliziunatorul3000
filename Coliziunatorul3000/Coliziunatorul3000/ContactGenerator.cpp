@@ -69,7 +69,7 @@ void ContactGenerator::CheckAndAddContact(const PlaneShape &planeShape, const Cu
 
 void ContactGenerator::DebugContacts( Graphics *graphics )
 {
-	for( int i = 0; i < numContacts; i++ )
+	for( unsigned int i = 0; i < numContacts; i++ )
 	{
 		graphics->DrawDebugPoint( contacts[i].contactPoint );
 	}

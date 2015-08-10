@@ -179,6 +179,9 @@ void Graphics::Init(int w, int h, std::string title)
 
 	InitCubeModel();
 	InitPlaneModel();
+
+	LoadShaders("basicVS.vertexshader", "basicPS.pixelshader", programID);
+	LoadShaders("basicVS.vertexshader", "debugPS.pixelshader", debugProgramID);
 }
 
 void Graphics::Shutdown()
@@ -186,6 +189,7 @@ void Graphics::Shutdown()
 	glDeleteBuffers(1, &cubeVertexBuffer);
 	glDeleteBuffers(1, &cubeNormalBuffer);
 	glDeleteProgram(programID);
+	glDeleteProgram(debugProgramID);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
@@ -217,7 +221,7 @@ void Graphics::InitPlaneModel()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Graphics::LoadShaders(std::string vsPath, std::string psPath)
+void Graphics::LoadShaders(std::string vsPath, std::string psPath, GLuint &_programID)
 {
  
     // Create the shaders
@@ -276,27 +280,27 @@ void Graphics::LoadShaders(std::string vsPath, std::string psPath)
  
     // Link the program
     fprintf(stdout, "Linking program\n");
-    programID = glCreateProgram();
-    glAttachShader(programID, VertexShaderID);
-    glAttachShader(programID, FragmentShaderID);
-    glLinkProgram(programID);
+    _programID = glCreateProgram();
+    glAttachShader(_programID, VertexShaderID);
+    glAttachShader(_programID, FragmentShaderID);
+    glLinkProgram(_programID);
  
     // Check the program
-    glGetProgramiv(programID, GL_LINK_STATUS, &Result);
-    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    glGetProgramiv(_programID, GL_LINK_STATUS, &Result);
+    glGetProgramiv(_programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
     std::vector<char> ProgramErrorMessage( std::max(InfoLogLength, int(1)) );
-    glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+    glGetProgramInfoLog(_programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
     fprintf(stdout, "%s\n", &ProgramErrorMessage[0]);
  
     glDeleteShader(VertexShaderID);
     glDeleteShader(FragmentShaderID);
 
-	glUseProgram(programID);
+	glUseProgram(_programID);
 
-	projectionMatrixID = glGetUniformLocation(programID, "P");
-	viewMatrixID = glGetUniformLocation(programID, "V");
-	modelMatrixID = glGetUniformLocation(programID, "M");
-	difuseColorID = glGetUniformLocation(programID, "difuseColor");
+	projectionMatrixID = glGetUniformLocation(_programID, "P");
+	viewMatrixID = glGetUniformLocation(_programID, "V");
+	modelMatrixID = glGetUniformLocation(_programID, "M");
+	difuseColorID = glGetUniformLocation(_programID, "difuseColor");
 }
 
 void Graphics::DrawCube(glm::mat4 const &modelMatrix)
@@ -377,7 +381,7 @@ void Graphics::DrawDebugPoint( glm::vec3 pos )
 {
 	glDisable( GL_DEPTH_TEST );
 
-	glUseProgram(programID);
+	glUseProgram(debugProgramID);
 
 	glm::vec3 color(1.0f, 1.0f, 0.0f);
 
