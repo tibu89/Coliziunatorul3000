@@ -180,8 +180,8 @@ void Graphics::Init(int w, int h, std::string title)
 	InitCubeModel();
 	InitPlaneModel();
 
-	LoadShaders("basicVS.vertexshader", "basicPS.pixelshader", programID);
 	LoadShaders("basicVS.vertexshader", "debugPS.pixelshader", debugProgramID);
+	LoadShaders("basicVS.vertexshader", "basicPS.pixelshader", programID);
 }
 
 void Graphics::Shutdown()
