@@ -11,10 +11,16 @@ class PhysicsEngine
 {
 private:
 	std::vector<RigidBody> m_DynamicBodies;
+    std::vector<Collidable> m_Collidables;
 
-	std::vector<PlaneShape> m_Planes;
+    ContactGenerator *m_ContactGenerator;
 
 public:
+
+    PhysicsEngine()
+    {
+        //m_ContactGenerator = new ContactGenerator(this, 10000);
+    }
 
 	void Update(float _fDt);
 

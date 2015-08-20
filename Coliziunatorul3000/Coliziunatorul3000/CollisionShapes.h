@@ -8,14 +8,6 @@ enum ShapeType
 	PLANE
 };
 
-struct PlaneShape
-{
-	glm::vec3 normal;
-	float offset;
-
-	PlaneShape(float _offset = 0.0f, const glm::vec3 &_normal = glm::vec3(0.0f, 1.0f, 0.0f)){}
-};
-
 struct Collidable
 {
 	int m_iRigidBodyIndex;

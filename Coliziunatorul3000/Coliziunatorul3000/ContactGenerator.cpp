@@ -2,14 +2,12 @@
 #include <gl\glm\gtc\matrix_access.hpp>
 #include <iostream>
 
-float ProjectToAxis(const CubeShape& cubeShape, const glm::vec3& axis)
+float ProjectToAxis(const glm::mat4& _trMatrix, const glm::vec3& _halfSize, const glm::vec3& _axis)
 {
-	const glm::mat4& trMatrix = cubeShape.body->GetTransformMatrix();
-
 	return 
-		abs(glm::dot(glm::vec3(glm::column(trMatrix, 0)), axis)) * cubeShape.halfSize.x +
-		abs(glm::dot(glm::vec3(glm::column(trMatrix, 1)), axis)) * cubeShape.halfSize.y +
-		abs(glm::dot(glm::vec3(glm::column(trMatrix, 2)), axis)) * cubeShape.halfSize.z;
+        abs(glm::dot(glm::vec3(glm::column(_trMatrix, 0)), _axis)) * _halfSize.x +
+        abs(glm::dot(glm::vec3(glm::column(_trMatrix, 1)), _axis)) * _halfSize.y +
+        abs(glm::dot(glm::vec3(glm::column(_trMatrix, 2)), _axis)) * _halfSize.z;
 }
 
 glm::vec3 ContactGenerator::cubeVertices[] = {
@@ -23,14 +21,33 @@ glm::vec3 ContactGenerator::cubeVertices[] = {
 	glm::vec3( 0.5f,  0.5f,  0.5f)
 };
 
-ContactGenerator::ContactGenerator(unsigned int _maxContacts)
+/*ContactGenerator::ContactGenerator(PhysicsEngine *_physicsEngine, unsigned int _maxContacts)
 {
-	maxContacts = _maxContacts;
-	contacts.resize(maxContacts);
-	numContacts = 0;
+    m_PhysicsEngine = _physicsEngine;
+	m_MaxContacts = _maxContacts;
+	m_Contacts.resize(m_MaxContacts);
+	m_NumContacts = 0;
+}*/
+
+void ContactGenerator::CheckAndAddContact(const Collidable &_collidable1, const Collidable &_collidable2)
+{
+    if(_collidable1.m_iShapeType == ShapeType::PLANE && _collidable2.m_iShapeType == ShapeType::CUBE)
+    {
+        CheckAndAddContactPlaneCube(_collidable1, _collidable2); return;
+    }
+    
+    if(_collidable2.m_iShapeType == ShapeType::PLANE && _collidable1.m_iShapeType == ShapeType::CUBE)
+    {
+        CheckAndAddContactPlaneCube(_collidable2, _collidable1); return;
+    }
 }
 
-void ContactGenerator::CheckAndAddContact(const PlaneShape &planeShape, const CubeShape &cubeShape)
+void ContactGenerator::CheckAndAddContactPlaneCube(const Collidable &_collidable1, const Collidable &_collidable2)
+{
+
+}
+
+/*void ContactGenerator::CheckAndAddContact(const PlaneShape &planeShape, const CubeShape &cubeShape)
 {
 	if( numContacts >= maxContacts )
 	{
@@ -65,12 +82,12 @@ void ContactGenerator::CheckAndAddContact(const PlaneShape &planeShape, const Cu
 			contacts[numContacts++] = Contact( &planeShape, &cubeShape, planeShape.normal, contactPoint, penetration );
 		}
 	}
-}
+}*/
 
 void ContactGenerator::DebugContacts( Graphics *graphics )
 {
-	for( unsigned int i = 0; i < numContacts; i++ )
+	/*for( unsigned int i = 0; i < numContacts; i++ )
 	{
 		graphics->DrawDebugPoint( contacts[i].contactPoint );
-	}
+	}*/
 }

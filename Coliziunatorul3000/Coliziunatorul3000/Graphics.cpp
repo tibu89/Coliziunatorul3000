@@ -180,7 +180,7 @@ void Graphics::Init(int w, int h, std::string title)
 	InitCubeModel();
 	InitPlaneModel();
 
-	LoadShaders("basicVS.vertexshader", "debugPS.pixelshader", debugProgramID);
+	//LoadShaders("basicVS.vertexshader", "debugPS.pixelshader", debugProgramID);
 	LoadShaders("basicVS.vertexshader", "basicPS.pixelshader", programID);
 }
 
@@ -189,7 +189,7 @@ void Graphics::Shutdown()
 	glDeleteBuffers(1, &cubeVertexBuffer);
 	glDeleteBuffers(1, &cubeNormalBuffer);
 	glDeleteProgram(programID);
-	glDeleteProgram(debugProgramID);
+	//glDeleteProgram(debugProgramID);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
@@ -381,7 +381,7 @@ void Graphics::DrawDebugPoint( glm::vec3 pos )
 {
 	glDisable( GL_DEPTH_TEST );
 
-	glUseProgram(debugProgramID);
+	glUseProgram(programID);
 
 	glm::vec3 color(1.0f, 1.0f, 0.0f);
 
