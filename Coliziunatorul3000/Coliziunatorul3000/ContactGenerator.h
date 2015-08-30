@@ -8,11 +8,20 @@
 
 struct Contact
 {
-	int m_iCollidableIndex1, m_iCollidableIndex2;
+	//for cube: 0-7 vertices, 8-13 faces, 13-25 edges
+	int m_iFeatureIndex1, m_iFeatureIndex2;
 
 	glm::vec3 m_ContactNormal;
 	glm::vec3 m_ContactPoint;
 	float m_Penetration;
+};
+
+struct CollisionData
+{
+	int m_iCollidableIndex1, m_iCollidableIndex2;
+	int m_iNumContacts;
+
+	Contact contacts[4];
 };
 
 class ContactGenerator
