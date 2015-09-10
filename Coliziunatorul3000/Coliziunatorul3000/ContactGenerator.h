@@ -4,6 +4,7 @@
 #include <GL\glm\glm.hpp>
 #include <vector>
 #include "CollisionShapes.h"
+#include "RigidBody.h"
 #include "Graphics.h"
 
 struct Contact
@@ -27,19 +28,24 @@ struct CollisionData
 class ContactGenerator
 {
 private:
-    //PhysicsEngine *m_PhysicsEngine;
+	std::vector<CollisionData> m_Manifolds;
+	unsigned int m_NumManifolds;
+	unsigned int m_MaxManifolds;
 
-	std::vector<Contact> m_Contacts;
-	unsigned int m_NumContacts;
-	unsigned int m_MaxContacts;
+	std::vector<RigidBody> *m_RigidBodies;
 
 	static glm::vec3 cubeVertices[];
+	static glm::vec3 cubeFaceNormals[];
+	static unsigned char cubeFaceVertexIndices[];
 public:
-	//ContactGenerator(PhysicsEngine *_physicsEngine, unsigned int _maxContacts = 256 * 256);
-	void ClearContacts(){m_NumContacts = 0;}
+	ContactGenerator(std::vector<RigidBody> *_rigidBodies, unsigned int _maxContacts = 256 * 256);
+	void ClearContacts(){m_NumManifolds = 0;}
 
 	void CheckAndAddContact(const Collidable &_collidable1, const Collidable &_collidable2);
     void CheckAndAddContactPlaneCube(const Collidable &_collidable1, const Collidable &_collidable2);
 
 	void DebugContacts( Graphics* graphics );
+
+private:
+	int GetBestCubeFaceToDirection(const glm::quat &orientation, const glm::vec3 &dir);
 };

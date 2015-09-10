@@ -3,6 +3,7 @@
 #include <GL\glm\gtx\transform.hpp>
 
 #include "Graphics.h"
+#include "PhysicsEngine.h"
 #include "FirstPersonCamera.h"
 #include "ThirdPersonCamera.h"
 
@@ -13,6 +14,8 @@ Graphics* graphics = NULL;
 Camera* camera = NULL;
 
 glm::vec3 cameraDirectionVector;
+
+PhysicsEngine* physics;
 
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
@@ -87,6 +90,8 @@ int main()
 	//ContactGenerator contactGenerator(1000);
 	graphics = new Graphics();
 	graphics->Init(640, 480, "Coliziunatorul3000");
+
+	physics = new PhysicsEngine();
 	
 	std::cout<<glGetString(GL_VERSION)<<std::endl;
 	
@@ -105,15 +110,14 @@ int main()
 	glm::mat4 viewMatrix;
 
 	glm::mat4 planeModelMatrix = glm::translate(glm::vec3(0.0f, -10.0f, 0.0f)) * glm::scale(glm::vec3(100.0f, 100.0f, 100.0f));
+
+	physics->AddPlane(glm::vec3(0.f, 1.f, 0.f), -10.f);
+	RigidBodyID id1 = physics->AddCube();
 	
 	graphics->SetPerspective(perspectiveMatrix);
+	
+	physics->GetRigidBodyByID(id1).AddForceAtBodyPoint(glm::vec3(1.f,-4.f,1.f), glm::vec3(-0.5f, 0.5f, 0.5f));
 
-	//RigidBody *body = new RigidBody();
-
-	//CubeShape cubeShape(body);
-	//PlaneShape planeShape(-10.f);
-
-	//body->AddForceAtBodyPoint(glm::vec3(1.f,-4.f,1.f), glm::vec3(-0.5f, 0.5f, 0.5f));
 	do
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -123,13 +127,12 @@ int main()
 		glDisable(GL_CULL_FACE);
 		graphics->SetView(camera->GetViewMatrix());
 		//body->Integrate(1 / 30.f);
-		//graphics->DrawCube(body->GetTransformMatrix());
+		graphics->DrawCube(physics->GetRigidBodyByID(id1).GetTransformMatrix());
 
 		graphics->DrawPlane(planeModelMatrix);
 
-		//contactGenerator.CheckAndAddContact(planeShape, cubeShape);
-		//contactGenerator.DebugContacts( graphics );
-		//contactGenerator.ClearContacts();
+		physics->Update(1 / 30.f);
+		physics->DebugContacts(graphics);
 
 		glfwSwapBuffers(graphics->GetWindow());	
         glfwPollEvents();

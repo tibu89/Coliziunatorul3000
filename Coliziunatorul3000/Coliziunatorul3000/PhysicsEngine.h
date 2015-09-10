@@ -19,10 +19,26 @@ public:
 
     PhysicsEngine()
     {
-        //m_ContactGenerator = new ContactGenerator(this, 10000);
+        m_ContactGenerator = new ContactGenerator(&m_DynamicBodies);
     }
 
 	void Update(float _fDt);
 
-	RigidBodyID AddCube(glm::vec3 _pos, glm::quat _orientation, glm::vec3 _halfSize);
+	RigidBodyID AddCube(const glm::vec3 _pos = glm::vec3(0.f), const glm::quat _orientation = glm::quat(), const glm::vec3 _halfSize = glm::vec3(0.5f));
+	void AddPlane(const glm::vec3 &_normal, float _dist);
+
+	RigidBody& GetRigidBodyByID(RigidBodyID _id)
+	{
+		assert((unsigned int)_id < m_DynamicBodies.size());
+
+		return m_DynamicBodies[_id];
+	}
+
+	std::vector<RigidBody>& GetRigidBodies(){return m_DynamicBodies;}
+
+	void DebugContacts(Graphics *_graphics){m_ContactGenerator->DebugContacts(_graphics);}
+
+private:
+	void IntegrateDynamicBodies(float _fDt);
+	void CheckContacts();
 };

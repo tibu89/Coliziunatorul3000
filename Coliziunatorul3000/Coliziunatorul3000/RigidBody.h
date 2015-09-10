@@ -42,14 +42,18 @@ public:
 	void AddForceAtBodyPoint(const glm::vec3 &force, const glm::vec3 &point);
 
 	const glm::mat4& GetTransformMatrix(){return modelTransformMatrix;}
+	const glm::quat& GetOrientation(){ return orientation;}
 
 	const glm::vec3& GetPosition(){return position;}
 
-	RigidBody()
+	RigidBody(const glm::vec3 &_position, const glm::quat &_orientation)
 	{
 		invMass = 1.f;
 		linearDamping = 0.99f;
 		angularDamping = 0.99f;
+
+		position = _position;
+		orientation = _orientation;
 
 		CalculateDerivedData();
 	}
