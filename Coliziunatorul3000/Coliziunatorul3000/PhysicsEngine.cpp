@@ -17,13 +17,18 @@ void PhysicsEngine::CheckContacts()
 	{
 		for(unsigned int j = i + 1; j < m_Collidables.size(); j++)
 		{
-			m_ContactGenerator->CheckAndAddContact(m_Collidables[i], m_Collidables[j]);
+			m_ContactGenerator->CheckAndAddContact(i, j);
 		}
 	}
 }
 
 void PhysicsEngine::Update(float _fDt)
 {
+	for(std::vector<RigidBody>::iterator it = m_DynamicBodies.begin(); it != m_DynamicBodies.end(); it++)
+	{
+		it->AddForceAtBodyPoint(glm::vec3(0.f, -0.01f, 0.f), glm::vec3());
+	}
+	
 	IntegrateDynamicBodies(_fDt);
 
 	CheckContacts();

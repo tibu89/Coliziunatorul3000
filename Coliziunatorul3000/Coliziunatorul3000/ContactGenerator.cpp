@@ -40,12 +40,13 @@ unsigned char ContactGenerator::cubeFaceVertexIndices[] = {
 	0, 2, 6, 4,
 };
 
-ContactGenerator::ContactGenerator(std::vector<RigidBody> *_rigidBodies, unsigned int _maxContacts)
+ContactGenerator::ContactGenerator(std::vector<RigidBody> *_rigidBodies, std::vector<Collidable> *_collidables, unsigned int _maxContacts)
 {
 	m_RigidBodies = _rigidBodies;
-	m_MaxManifolds = _maxContacts;
-	m_Manifolds.resize(m_MaxManifolds);
-	m_NumManifolds = 0;
+	m_Collidables = _collidables;
+	m_MaxContacts = _maxContacts;
+	m_Contacts.resize(m_MaxContacts);
+	m_NumContacts = 0;
 }
 
 int ContactGenerator::GetBestCubeFaceToDirection(const glm::quat &orientation, const glm::vec3 &dir)
@@ -72,32 +73,38 @@ int ContactGenerator::GetBestCubeFaceToDirection(const glm::quat &orientation, c
 	return bestFaceIndex;
 }
 
-void ContactGenerator::CheckAndAddContact(const Collidable &_collidable1, const Collidable &_collidable2)
+void ContactGenerator::CheckAndAddContact(CollidableID _collidableId1, CollidableID _collidableId2)
 {
-    if(_collidable1.m_iShapeType == ShapeType::PLANE && _collidable2.m_iShapeType == ShapeType::CUBE)
+	Collidable &collidable1 = m_Collidables->at(_collidableId1);
+	Collidable &collidable2 = m_Collidables->at(_collidableId2);
+	
+    if(collidable1.m_iShapeType == ShapeType::PLANE && collidable2.m_iShapeType == ShapeType::CUBE)
     {
-        CheckAndAddContactPlaneCube(_collidable1, _collidable2); return;
+        CheckAndAddContactCubePlane(_collidableId2, _collidableId1); return;
     }
     
-    if(_collidable2.m_iShapeType == ShapeType::PLANE && _collidable1.m_iShapeType == ShapeType::CUBE)
+    if(collidable2.m_iShapeType == ShapeType::PLANE && collidable1.m_iShapeType == ShapeType::CUBE)
     {
-        CheckAndAddContactPlaneCube(_collidable2, _collidable1); return;
+        CheckAndAddContactCubePlane(_collidableId1, _collidableId2); return;
     }
 }
 
-void ContactGenerator::CheckAndAddContactPlaneCube(const Collidable &_collidable1, const Collidable &_collidable2)
+void ContactGenerator::CheckAndAddContactCubePlane(CollidableID _collidableId1, CollidableID _collidableId2)
 {
-	if(m_NumManifolds >= m_MaxManifolds)
+	if(m_NumContacts >= m_MaxContacts)
 	{
 		std::cerr<<"Max contacts reached!!!\n";
 		return;
 	}
 
-	glm::vec3 planeNormal = _collidable1.m_vData.xyz;
-	float planeDist = _collidable1.m_vData.w;
-	RigidBody &body = m_RigidBodies->at(_collidable2.m_iRigidBodyIndex);
+	Collidable &collidable1 = m_Collidables->at(_collidableId1);
+	Collidable &collidable2 = m_Collidables->at(_collidableId2);
+
+	glm::vec3 planeNormal = collidable2.m_vData.xyz;
+	float planeDist = collidable2.m_vData.w;
+	RigidBody &body = m_RigidBodies->at(collidable1.m_iRigidBodyIndex);
 	glm::mat4 cubeTrMatrix = body.GetTransformMatrix();
-	glm::vec3 cubeHalfSize = _collidable2.m_vData.xyz;
+	glm::vec3 cubeHalfSize = collidable1.m_vData.xyz;
 
 	float projectedRadius = ProjectToAxis(cubeTrMatrix, cubeHalfSize, planeNormal);
 
@@ -106,73 +113,42 @@ void ContactGenerator::CheckAndAddContactPlaneCube(const Collidable &_collidable
 		return; //cube too far to potentially contact
 	}
 
-	int incidentFaceIndex = GetBestCubeFaceToDirection(m_RigidBodies->at(_collidable2.m_iRigidBodyIndex).GetOrientation(), planeNormal);
+	int incidentFaceIndex = GetBestCubeFaceToDirection(m_RigidBodies->at(collidable1.m_iRigidBodyIndex).GetOrientation(), planeNormal);
 	glm::vec4 currentVertex;
-
-	CollisionData &collisionData = m_Manifolds[m_NumManifolds++];
-	collisionData.m_iNumContacts = 0;
 
 	for(unsigned short faceVertIndex = incidentFaceIndex * 4; faceVertIndex < incidentFaceIndex * 4 + 4; faceVertIndex++)
 	{
 		currentVertex = glm::vec4(cubeVertices[cubeFaceVertexIndices[faceVertIndex]], 1.f);
 		
 		currentVertex = cubeTrMatrix * currentVertex;
+		float distance = glm::dot(planeNormal, glm::vec3(currentVertex.xyz));
 
-		Contact &newContact = collisionData.contacts[collisionData.m_iNumContacts++];
+		if(distance < planeDist)
+		{
+			Contact &newContact = m_Contacts[m_NumContacts++];
 
-		newContact.m_ContactNormal = planeNormal;
-		newContact.m_ContactPoint = currentVertex.xyz;
-		newContact.m_iFeatureIndex1 = faceVertIndex;
-		newContact.m_iFeatureIndex2 = -1;
-		newContact.m_Penetration = 0.f;
+			newContact.m_iCollidableIndex1 = _collidableId1;
+			newContact.m_iCollidableIndex2 = -1;
+			newContact.m_ContactNormal = planeNormal;
+			newContact.m_ContactPoint = currentVertex.xyz;
+			newContact.m_Penetration = planeDist - distance;
+		}
 	}
 }
 
-/*void ContactGenerator::CheckAndAddContact(const PlaneShape &planeShape, const CubeShape &cubeShape)
-{
-	if( numContacts >= maxContacts )
-	{
-		return;
-	}
-
-	//midphase: (?)
-	float projectedRadius = ProjectToAxis(cubeShape, planeShape.normal);
-	if(glm::dot(planeShape.normal, cubeShape.body->GetPosition()) - projectedRadius > planeShape.offset)
-	{
-		return; //cube too far to potentially contact
-	}
-
-	glm::mat4 sizeTransform = glm::scale(cubeShape.halfSize * 2.f);
-
-	glm::vec3 currentVertex;
-
-	for(unsigned int i = 0; i < 8 && numContacts < maxContacts; i++)
-	{
-		currentVertex = ( cubeShape.body->GetTransformMatrix() * sizeTransform * glm::vec4(cubeVertices[i], 1.f) ).xyz;
-
-		float distance = glm::dot( planeShape.normal, currentVertex );
-
-		if( distance < planeShape.offset )
-		{
-			float penetration = planeShape.offset - distance;
-
-			glm::vec3 contactPoint = planeShape.normal * (penetration / 2) + currentVertex;
-
-			Contact contact;
-						
-			contacts[numContacts++] = Contact( &planeShape, &cubeShape, planeShape.normal, contactPoint, penetration );
-		}
-	}
-}*/
-
 void ContactGenerator::DebugContacts( Graphics *graphics )
 {
-	for(unsigned int i = 0; i < m_NumManifolds; i++)
+	for(unsigned int i = 0; i < m_NumContacts; i++)
 	{
-		CollisionData &cdata = m_Manifolds[i];
-		for(unsigned short j = 0; j < cdata.m_iNumContacts; j++)
-		{
-			graphics->DrawDebugPoint(cdata.contacts[j].m_ContactPoint);
-		}
+		Contact &contact = m_Contacts[i];
+		graphics->DrawDebugPoint(contact.m_ContactPoint);
+
+		//naivest resolve ever
+		m_RigidBodies->at(m_Collidables->at(contact.m_iCollidableIndex1).m_iRigidBodyIndex).AddForceAtPoint(contact.m_ContactNormal * contact.m_Penetration * 0.1f, contact.m_ContactPoint);
 	}
+}
+
+void Contact::CalculateInternals(float _fDt)
+{
+
 }

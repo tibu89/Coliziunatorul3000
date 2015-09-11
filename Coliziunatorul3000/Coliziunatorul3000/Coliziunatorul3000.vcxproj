@@ -69,6 +69,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ContactGenerator.cpp" />
+    <ClCompile Include="ContactResolver.cpp" />
     <ClCompile Include="FirstPersonCamera.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="main.cpp" />
@@ -80,6 +81,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionShapes.h" />
     <ClInclude Include="ContactGenerator.h" />
+    <ClInclude Include="ContactResolver.h" />
     <ClInclude Include="FirstPersonCamera.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="PhysicsEngine.h" />

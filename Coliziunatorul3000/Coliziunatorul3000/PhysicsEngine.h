@@ -19,7 +19,7 @@ public:
 
     PhysicsEngine()
     {
-        m_ContactGenerator = new ContactGenerator(&m_DynamicBodies);
+        m_ContactGenerator = new ContactGenerator(&m_DynamicBodies, &m_Collidables);
     }
 
 	void Update(float _fDt);

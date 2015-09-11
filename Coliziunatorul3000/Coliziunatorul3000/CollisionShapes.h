@@ -2,6 +2,8 @@
 
 #include "RigidBody.h"
 
+typedef int CollidableID;
+
 enum ShapeType
 {
 	CUBE = 0,

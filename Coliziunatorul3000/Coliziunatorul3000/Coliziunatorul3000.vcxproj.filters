@@ -45,6 +45,9 @@
     <ClCompile Include="PhysicsEngine.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="ContactResolver.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -69,6 +72,9 @@
       <Filter>Camera</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsEngine.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ContactResolver.h">
       <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
