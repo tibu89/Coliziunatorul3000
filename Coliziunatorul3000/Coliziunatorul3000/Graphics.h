@@ -1,10 +1,12 @@
 #pragma once
 
-#include<GL\glew\glew.h>
-#include<GL\GLFW\glfw3.h>
-#include<GL\glm\glm.hpp>
+#include <GL\glew\glew.h>
+#include <GL\GLFW\glfw3.h>
+#include <GL\glm\glm.hpp>
+#include "Mesh.h"
 
-#include<string>
+#include <string>
+#include <vector>
 
 class Graphics
 {
@@ -22,24 +24,31 @@ private:
 
 	GLuint difuseColorID;
 
-	GLuint cubeVertexBuffer;
-	GLuint cubeNormalBuffer;
+	GLuint vertexBuffer;
+	GLuint normalBuffer;
 
-	GLuint planeVertexBuffer;
-	GLuint planeNormalBuffer;
+	std::vector<float> vertexData;
+	std::vector<float> normalData;
 
-	static const GLfloat cubeVertexData[];
-	static const GLfloat cubeNormalData[];
-
-	static const GLfloat planeVertexData[];
-	static const GLfloat planeNormalData[];
-
-	void InitCubeModel(); //lol, model
-	void InitPlaneModel(); //dublu lol
+	std::vector<Mesh> meshes;
 
 	void LoadShaders(std::string vsPath, std::string psPath, GLuint &_programID);
 
+	Graphics(){}
+
+	static Graphics* singleton;
+
 public:
+	static Graphics* Get()
+	{
+		if(singleton == NULL)
+		{
+			singleton = new Graphics();
+		}
+
+		return singleton;
+	}
+
 	void Init(int, int, std::string);
 	void Shutdown();
 	GLFWwindow* GetWindow(){return window;}
@@ -56,8 +65,7 @@ public:
 		glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
 	}
 
-	void DrawCube(glm::mat4 const &modelMatrix);
-	void DrawPlane(glm::mat4 const &modelMatrix);
-
-	void DrawDebugPoint(glm::vec3 pos);
+	int AddMesh(const float [], const float[], int);
+	void UpdateVBOs();
+	void DrawMesh(unsigned int, glm::mat4 const &, glm::vec3 const&);
 };

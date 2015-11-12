@@ -5,130 +5,7 @@
 #include <GL\glm\gtx\transform.hpp>
 #include "Graphics.h"
 
-#pragma region CubeData
-const GLfloat Graphics::cubeVertexData[] = {
-    -0.5f,-0.5f,-0.5f,
-    -0.5f,-0.5f, 0.5f,
-    -0.5f, 0.5f, 0.5f,
-
-     0.5f, 0.5f,-0.5f, 
-    -0.5f,-0.5f,-0.5f,
-    -0.5f, 0.5f,-0.5f,
-
-     0.5f,-0.5f, 0.5f,
-    -0.5f,-0.5f,-0.5f,
-     0.5f,-0.5f,-0.5f,
-
-     0.5f, 0.5f,-0.5f,
-     0.5f,-0.5f,-0.5f,
-    -0.5f,-0.5f,-0.5f,
-
-    -0.5f,-0.5f,-0.5f,
-    -0.5f, 0.5f, 0.5f,
-    -0.5f, 0.5f,-0.5f,
-
-     0.5f,-0.5f, 0.5f,
-    -0.5f,-0.5f, 0.5f,
-    -0.5f,-0.5f,-0.5f,
-
-    -0.5f, 0.5f, 0.5f,
-    -0.5f,-0.5f, 0.5f,
-     0.5f,-0.5f, 0.5f,
-
-     0.5f, 0.5f, 0.5f,
-     0.5f,-0.5f,-0.5f,
-     0.5f, 0.5f,-0.5f,
-
-     0.5f,-0.5f,-0.5f,
-     0.5f, 0.5f, 0.5f,
-     0.5f,-0.5f, 0.5f,
-
-     0.5f, 0.5f, 0.5f,
-     0.5f, 0.5f,-0.5f,
-    -0.5f, 0.5f,-0.5f,
-
-     0.5f, 0.5f, 0.5f,
-    -0.5f, 0.5f,-0.5f,
-    -0.5f, 0.5f, 0.5f,
-
-     0.5f, 0.5f, 0.5f,
-    -0.5f, 0.5f, 0.5f,
-     0.5f,-0.5f, 0.5f
-};
-
-const GLfloat Graphics::cubeNormalData[] = {
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-    
-     0.0f, 0.0f,-1.0f,
-     0.0f, 0.0f,-1.0f,
-     0.0f, 0.0f,-1.0f,
-     
-     0.0f,-1.0f, 0.0f,
-     0.0f,-1.0f, 0.0f,
-     0.0f,-1.0f, 0.0f,
-     
-     0.0f, 0.0f,-1.0f,
-     0.0f, 0.0f,-1.0f,
-     0.0f, 0.0f,-1.0f,
-     
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-    
-     0.0f,-1.0f, 0.0f,
-     0.0f,-1.0f, 0.0f,
-     0.0f,-1.0f, 0.0f,
-     
-     0.0f, 0.0f, 1.0f,
-     0.0f, 0.0f, 1.0f,
-     0.0f, 0.0f, 1.0f,
-     
-     1.0f, 0.0f, 0.0f,
-     1.0f, 0.0f, 0.0f,
-     1.0f, 0.0f, 0.0f,
-     
-     1.0f, 0.0f, 0.0f,
-     1.0f, 0.0f, 0.0f,
-     1.0f, 0.0f, 0.0f,
-     
-     0.0f, 1.0f, 0.0f,
-     0.0f, 1.0f, 0.0f,
-     0.0f, 1.0f, 0.0f,
-     
-     0.0f, 1.0f, 0.0f,
-     0.0f, 1.0f, 0.0f,
-     0.0f, 1.0f, 0.0f,
-     
-     0.0f, 0.0f, 1.0f,
-     0.0f, 0.0f, 1.0f,
-     0.0f, 0.0f, 1.0f,
-};
-
-#pragma endregion
-
-#pragma region PlaneData
-const GLfloat Graphics::planeVertexData[] = {
-	-1.0f, 0.0f, -1.0f,
-	-1.0f, 0.0f,  1.0f,
-	 1.0f, 0.0f, -1.0f,
-	 
-	 1.0f, 0.0f, -1.0f,
-	-1.0f, 0.0f,  1.0f,
-	 1.0f, 0.0f,  1.0f,
-};
-
-const GLfloat Graphics::planeNormalData[] = {
-	0.0f, 1.0f, 0.0f,
-	0.0f, 1.0f, 0.0f,
-	0.0f, 1.0f, 0.0f,
-
-	0.0f, 1.0f, 0.0f,
-	0.0f, 1.0f, 0.0f,
-	0.0f, 1.0f, 0.0f,
-};
-#pragma endregion
+Graphics* Graphics::singleton = NULL;
 
 void Graphics::Init(int w, int h, std::string title)
 {
@@ -177,48 +54,19 @@ void Graphics::Init(int w, int h, std::string title)
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 	glPointSize(6.0f);
 
-	InitCubeModel();
-	InitPlaneModel();
-
 	//LoadShaders("basicVS.vertexshader", "debugPS.pixelshader", debugProgramID);
 	LoadShaders("basicVS.vertexshader", "basicPS.pixelshader", programID);
 }
 
 void Graphics::Shutdown()
 {
-	glDeleteBuffers(1, &cubeVertexBuffer);
-	glDeleteBuffers(1, &cubeNormalBuffer);
+	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &normalBuffer);
 	glDeleteProgram(programID);
 	//glDeleteProgram(debugProgramID);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
-}
-
-void Graphics::InitCubeModel()
-{
-	glGenBuffers(1, &cubeVertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertexData), &cubeVertexData[0], GL_STATIC_DRAW);
-
-	glGenBuffers(1, &cubeNormalBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeNormalBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeNormalData), &cubeNormalData[0], GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void Graphics::InitPlaneModel()
-{
-	glGenBuffers(1, &planeVertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertexData), &planeVertexData[0], GL_STATIC_DRAW);
-
-	glGenBuffers(1, &planeNormalBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, planeNormalBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planeNormalData), &planeNormalData[0], GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Graphics::LoadShaders(std::string vsPath, std::string psPath, GLuint &_programID)
@@ -303,95 +151,45 @@ void Graphics::LoadShaders(std::string vsPath, std::string psPath, GLuint &_prog
 	difuseColorID = glGetUniformLocation(_programID, "difuseColor");
 }
 
-void Graphics::DrawCube(glm::mat4 const &modelMatrix)
+//TEMP, will load from properly loaded .obj-s
+int Graphics::AddMesh(const float _vertices[], const float _normals[], int _numVertices)
 {
-	glUseProgram(programID);
+	Mesh newMesh(vertexData.size() / 3, _numVertices);
 
-	glm::vec3 cubeColor(1.0f, 0.0f, 0.0f);
+	vertexData.insert(vertexData.end(), _vertices, _vertices + _numVertices * 3);
+	normalData.insert(normalData.end(), _normals,  _normals  + _numVertices * 3);
 
-	glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &modelMatrix[0][0]);
-	glUniform3fv(difuseColorID, 1, &cubeColor[0]);
+	meshes.push_back(newMesh);
 
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
-	glVertexAttribPointer(
-		0,
-		3,
-		GL_FLOAT,
-		GL_FALSE,
-		0,
-		(void*)0
-	);
-
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeNormalBuffer);
-	glVertexAttribPointer(
-		1,
-		3,
-		GL_FLOAT,
-		GL_FALSE,
-		0,
-		(void*)0
-	);
-
-	glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	return meshes.size() - 1;
 }
 
-void Graphics::DrawPlane(glm::mat4 const &modelMatrix)
+void Graphics::UpdateVBOs()
 {
-	glUseProgram(programID);
+	glGenBuffers(1, &vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), &vertexData[0], GL_STATIC_DRAW);
 
-	glm::vec3 planeColor(0.0f, 1.0f, 0.0f);
+	glGenBuffers(1, &normalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+	glBufferData(GL_ARRAY_BUFFER, normalData.size() * sizeof(float), &normalData[0], GL_STATIC_DRAW);
 
-	glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &modelMatrix[0][0]);
-	glUniform3fv(difuseColorID, 1, &planeColor[0]);
-
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
-	glVertexAttribPointer(
-		0,
-		3,
-		GL_FLOAT,
-		GL_FALSE,
-		0,
-		(void*)0
-	);
-
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, planeNormalBuffer);
-	glVertexAttribPointer(
-		1,
-		3,
-		GL_FLOAT,
-		GL_FALSE,
-		0,
-		(void*)0
-	);
-
-	glDrawArrays(GL_TRIANGLES, 0, 2 * 3);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Graphics::DrawDebugPoint( glm::vec3 pos )
+void Graphics::DrawMesh(unsigned int meshID, glm::mat4 const &modelMatrix, glm::vec3 const &color)
 {
-	glDisable( GL_DEPTH_TEST );
+	assert(meshID < meshes.size());
+
+	Mesh &mesh = meshes[meshID];
 
 	glUseProgram(programID);
-
-	glm::vec3 color(1.0f, 1.0f, 0.0f);
-
-	glm::mat4 modelMatrix = glm::translate( pos ) * glm::scale( glm::vec3( 0.1f, 0.1f, 0.1f ) );
 
 	glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &modelMatrix[0][0]);
 	glUniform3fv(difuseColorID, 1, &color[0]);
 
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	glVertexAttribPointer(
 		0,
 		3,
@@ -402,7 +200,7 @@ void Graphics::DrawDebugPoint( glm::vec3 pos )
 	);
 
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeNormalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
 	glVertexAttribPointer(
 		1,
 		3,
@@ -412,10 +210,10 @@ void Graphics::DrawDebugPoint( glm::vec3 pos )
 		(void*)0
 	);
 
-	glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+	glDrawArrays(GL_TRIANGLES, mesh.start, mesh.numVertices);
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
-
-	glEnable( GL_DEPTH_TEST );
+	
+	//glUseProgram(0);
 }

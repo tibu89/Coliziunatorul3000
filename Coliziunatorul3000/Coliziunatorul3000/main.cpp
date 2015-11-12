@@ -1,16 +1,18 @@
 #include <iostream>
 #include <GL\glm\gtc\matrix_transform.hpp>
 #include <GL\glm\gtx\transform.hpp>
+#include <GL\glm\gtc\random.hpp>
 
 #include "Graphics.h"
 #include "PhysicsEngine.h"
 #include "FirstPersonCamera.h"
 #include "ThirdPersonCamera.h"
 
+#include "tempModels.h"
+
 #define MOUSE_SPEED (0.002f)
 #define TRANSLATE_SPEED (0.02f)
 
-Graphics* graphics = NULL;
 Camera* camera = NULL;
 
 glm::vec3 cameraDirectionVector;
@@ -87,9 +89,15 @@ void CheckCameraInputs(GLFWwindow* window)
 
 int main()
 {
-	//ContactGenerator contactGenerator(1000);
-	graphics = new Graphics();
+	Graphics* graphics = Graphics::Get();
+
 	graphics->Init(640, 480, "Coliziunatorul3000");
+	int cubeMesh  = graphics->AddMesh(cubeVertexData,  cubeNormalData,  sizeof(cubeVertexData)  / sizeof(float) / 3);
+	int planeMesh = graphics->AddMesh(planeVertexData, planeNormalData, sizeof(planeVertexData) / sizeof(float) / 3);
+	graphics->UpdateVBOs();
+
+	glm::vec3 cubeColor(1.f, 0.f, 0.f);
+	glm::vec3 planeColor(0.f, 1.f, 0.f);
 
 	physics = new PhysicsEngine();
 	
@@ -112,11 +120,15 @@ int main()
 	glm::mat4 planeModelMatrix = glm::translate(glm::vec3(0.0f, -10.0f, 0.0f)) * glm::scale(glm::vec3(100.0f, 100.0f, 100.0f));
 
 	physics->AddPlane(glm::vec3(0.f, 1.f, 0.f), -10.f);
-	RigidBodyID id1 = physics->AddCube();
 	
 	graphics->SetPerspective(perspectiveMatrix);
-	
-	physics->GetRigidBodyByID(id1).AddForceAtBodyPoint(glm::vec3(1.f,-4.f,1.f), glm::vec3(-0.5f, 0.5f, 0.5f));
+
+	std::vector<RigidBodyID> cubes(10);
+	for(std::vector<RigidBodyID>::iterator it = cubes.begin(); it != cubes.end(); it++)
+	{
+		*it = physics->AddCube(glm::sphericalRand(5.f));
+		physics->GetRigidBodyByID(*it).AddForceAtBodyPoint(glm::sphericalRand(2.f), glm::sphericalRand(0.5f));
+	}
 
 	do
 	{
@@ -126,10 +138,13 @@ int main()
 
 		glDisable(GL_CULL_FACE);
 		graphics->SetView(camera->GetViewMatrix());
-		//body->Integrate(1 / 30.f);
-		graphics->DrawCube(physics->GetRigidBodyByID(id1).GetTransformMatrix());
 
-		graphics->DrawPlane(planeModelMatrix);
+		for(std::vector<RigidBodyID>::iterator it = cubes.begin(); it != cubes.end(); it++)
+		{
+			graphics->DrawMesh(cubeMesh, physics->GetRigidBodyByID(*it).GetTransformMatrix(), cubeColor);
+		}
+
+		graphics->DrawMesh(planeMesh, planeModelMatrix, planeColor);
 
 		physics->Update(1 / 30.f);
 		physics->DebugContacts(graphics);

@@ -77,6 +77,12 @@
     <ClInclude Include="ContactResolver.h">
       <Filter>Physics</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="tempModels.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="basicPS.pixelshader">

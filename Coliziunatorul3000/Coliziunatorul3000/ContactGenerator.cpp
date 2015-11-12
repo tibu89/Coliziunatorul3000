@@ -141,10 +141,10 @@ void ContactGenerator::DebugContacts( Graphics *graphics )
 	for(unsigned int i = 0; i < m_NumContacts; i++)
 	{
 		Contact &contact = m_Contacts[i];
-		graphics->DrawDebugPoint(contact.m_ContactPoint);
+		//graphics->DrawDebugPoint(contact.m_ContactPoint);
 
 		//naivest resolve ever
-		m_RigidBodies->at(m_Collidables->at(contact.m_iCollidableIndex1).m_iRigidBodyIndex).AddForceAtPoint(contact.m_ContactNormal * contact.m_Penetration * 0.1f, contact.m_ContactPoint);
+		m_RigidBodies->at(m_Collidables->at(contact.m_iCollidableIndex1).m_iRigidBodyIndex).AddForceAtPoint(contact.m_ContactNormal * contact.m_Penetration * 0.4f, contact.m_ContactPoint);
 	}
 }
 

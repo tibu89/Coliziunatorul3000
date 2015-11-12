@@ -84,8 +84,10 @@
     <ClInclude Include="ContactResolver.h" />
     <ClInclude Include="FirstPersonCamera.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="tempModels.h" />
     <ClInclude Include="ThirdPersonCamera.h" />
   </ItemGroup>
   <ItemGroup>
