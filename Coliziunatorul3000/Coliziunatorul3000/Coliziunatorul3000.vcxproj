@@ -72,6 +72,7 @@
     <ClCompile Include="ContactResolver.cpp" />
     <ClCompile Include="FirstPersonCamera.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="RigidBody.cpp" />
@@ -84,6 +85,7 @@
     <ClInclude Include="ContactResolver.h" />
     <ClInclude Include="FirstPersonCamera.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="RigidBody.h" />

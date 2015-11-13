@@ -5,6 +5,7 @@
 
 #include "Graphics.h"
 #include "PhysicsEngine.h"
+#include "InputManager.h"
 #include "FirstPersonCamera.h"
 #include "ThirdPersonCamera.h"
 
@@ -13,106 +14,62 @@
 #define MOUSE_SPEED (0.002f)
 #define TRANSLATE_SPEED (0.02f)
 
-Camera* camera = NULL;
-
-glm::vec3 cameraDirectionVector;
-
 PhysicsEngine* physics;
 
-void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+//ugly, should use event system
+void CheckCameraInputs(Camera* camera)
 {
-	camera->Zoom(-(float)yoffset);
-}
+	InputManager* inputManager = InputManager::Get();
 
-void KeyCallback(GLFWwindow* window, int button, int scancode, int action, int mods)
-{
-	float sign = 0.f;
+	float mouseDeltaX = inputManager->GetDeltaX();
+	float mouseDeltaY = inputManager->GetDeltaY();
 
-	switch(action)
+	if( inputManager->GetMouseStatus(GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS )
 	{
-	case GLFW_PRESS:
-		sign = 1.f;
-		break;
-	case GLFW_RELEASE:
-		sign = -1.f;
-		break;
-	default:
-		return;
-	}
-
-	switch(button)
-	{
-	case 'w':
-	case 'W':
-		cameraDirectionVector += sign * glm::vec3(  0.f,  0.f, -1.f );
-		break;
-	case 's':
-	case 'S':
-		cameraDirectionVector += sign * glm::vec3(  0.f,  0.f,  1.f );
-		break;
-	case 'a':
-	case 'A':
-		cameraDirectionVector += sign * glm::vec3( -1.f,  0.f,  0.f );
-		break;
-	case 'd':
-	case 'D':
-		cameraDirectionVector += sign * glm::vec3(  1.f,  0.f,  0.f );
-		break;
-	}
-}
-
-void CheckCameraInputs(GLFWwindow* window)
-{
-	int halfWidth, halfHeight;
-    glfwGetFramebufferSize(window, &halfWidth, &halfHeight);
-	halfWidth /= 2;
-	halfHeight /= 2;
-
-	double xpos = 0, ypos = 0;
-
-	glfwGetCursorPos(window, &xpos, &ypos);
-
-	if( glfwGetMouseButton( window, GLFW_MOUSE_BUTTON_MIDDLE ) == GLFW_PRESS )
-	{
-		camera->Translate( glm::vec3( 0.f, (halfHeight - (float)ypos) * TRANSLATE_SPEED, 0.f ) );
+		camera->Translate( glm::vec3( 0.f, mouseDeltaY * TRANSLATE_SPEED, 0.f ) );
 	}
 	else
 	{
-		camera->RotateYaw  ((halfWidth  - (float)xpos) * MOUSE_SPEED);
-		camera->RotatePitch((halfHeight - (float)ypos) * MOUSE_SPEED);
+		camera->RotateYaw  (mouseDeltaX * MOUSE_SPEED);
+		camera->RotatePitch(mouseDeltaY * MOUSE_SPEED);
 	}
 
-	glfwSetCursorPos(window, halfWidth, halfHeight);
+	glm::vec3 cameraDirectionVector;
+
+	cameraDirectionVector += glm::vec3( 0.f, 0.f, -1.f) * float(inputManager->GetKeyStatus(GLFW_KEY_W) != GLFW_RELEASE);
+	cameraDirectionVector += glm::vec3(-1.f, 0.f,  0.f) * float(inputManager->GetKeyStatus(GLFW_KEY_A) != GLFW_RELEASE);
+	cameraDirectionVector += glm::vec3( 0.f, 0.f,  1.f) * float(inputManager->GetKeyStatus(GLFW_KEY_S) != GLFW_RELEASE);
+	cameraDirectionVector += glm::vec3( 1.f, 0.f,  0.f) * float(inputManager->GetKeyStatus(GLFW_KEY_D) != GLFW_RELEASE);
 
 	camera->Translate( cameraDirectionVector * TRANSLATE_SPEED );
 }
 
+void InitSystems()
+{
+	Graphics::Get()->Init(640, 480, "Coliziunatorul3000");
+	InputManager::Get()->Init(Graphics::Get()->GetWindow());
+	PhysicsEngine::Get()->Init();
+}
+
 int main()
 {
-	Graphics* graphics = Graphics::Get();
+	InitSystems();
 
-	graphics->Init(640, 480, "Coliziunatorul3000");
+	Graphics* graphics = Graphics::Get();
+	InputManager* input = InputManager::Get();
+	PhysicsEngine* physics = PhysicsEngine::Get();
+
 	int cubeMesh  = graphics->AddMesh(cubeVertexData,  cubeNormalData,  sizeof(cubeVertexData)  / sizeof(float) / 3);
 	int planeMesh = graphics->AddMesh(planeVertexData, planeNormalData, sizeof(planeVertexData) / sizeof(float) / 3);
+
 	graphics->UpdateVBOs();
 
 	glm::vec3 cubeColor(1.f, 0.f, 0.f);
 	glm::vec3 planeColor(0.f, 1.f, 0.f);
-
-	physics = new PhysicsEngine();
 	
 	std::cout<<glGetString(GL_VERSION)<<std::endl;
 	
-    int width, height;
-    glfwGetFramebufferSize(graphics->GetWindow(), &width, &height);
-
-	glfwSetInputMode(graphics->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-	glfwSetCursorPos(graphics->GetWindow(), width / 2, height / 2);
-
-	glfwSetScrollCallback(graphics->GetWindow(), ScrollCallback);
-	glfwSetKeyCallback(graphics->GetWindow(), KeyCallback);
-
-	camera = new FirstPersonCamera(0.f, glm::pi<float>(), glm::vec3(0.f, 0.f,5.f));
+    Camera *camera = new FirstPersonCamera(0.f, glm::pi<float>(), glm::vec3(0.f, 0.f,5.f));
 
 	glm::mat4 perspectiveMatrix = glm::perspective(45.f, 640.f / 480.f, 1.0f, 200.0f);
 	glm::mat4 viewMatrix;
@@ -123,7 +80,7 @@ int main()
 	
 	graphics->SetPerspective(perspectiveMatrix);
 
-	std::vector<RigidBodyID> cubes(10);
+	std::vector<RigidBodyID> cubes(20);
 	for(std::vector<RigidBodyID>::iterator it = cubes.begin(); it != cubes.end(); it++)
 	{
 		*it = physics->AddCube(glm::sphericalRand(5.f));
@@ -133,8 +90,10 @@ int main()
 	do
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		input->UpdateMouseDeltas();
 		
-		CheckCameraInputs(graphics->GetWindow());
+		CheckCameraInputs(camera);
 
 		glDisable(GL_CULL_FACE);
 		graphics->SetView(camera->GetViewMatrix());

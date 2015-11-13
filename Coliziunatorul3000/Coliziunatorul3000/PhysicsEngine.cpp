@@ -1,5 +1,7 @@
 #include "PhysicsEngine.h"
 
+PhysicsEngine* PhysicsEngine::singleton = NULL;
+
 void PhysicsEngine::IntegrateDynamicBodies(float _fDt)
 {
 	int i = 0;

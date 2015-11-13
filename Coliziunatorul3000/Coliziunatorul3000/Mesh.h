@@ -1,3 +1,5 @@
+#pragma once
+
 #include <GL\glew\glew.h>
 
 struct Mesh

@@ -10,6 +10,9 @@ typedef int RigidBodyID;
 class PhysicsEngine
 {
 private:
+	PhysicsEngine() {}
+	static PhysicsEngine *singleton;
+
 	std::vector<RigidBody> m_DynamicBodies;
     std::vector<Collidable> m_Collidables;
 
@@ -17,7 +20,17 @@ private:
 
 public:
 
-    PhysicsEngine()
+	static PhysicsEngine* Get()
+	{
+		if(singleton == NULL)
+		{
+			singleton = new PhysicsEngine();
+		}
+
+		return singleton;
+	}
+
+    void Init()
     {
         m_ContactGenerator = new ContactGenerator(&m_DynamicBodies, &m_Collidables);
     }
